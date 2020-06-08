@@ -13,7 +13,6 @@ define([
     {
 
         //do stuff
-        console.log('required plugins loaded...');
 
         //jQuery Captcha Validation
 
@@ -28,7 +27,7 @@ define([
                 this.cache.$form = $('#captcha-form');
                 this.cache.$refreshCaptcha = $('#refresh-captcha');
                 this.cache.$captchaImg = $('img#captcha');
-                this.cache.$captchaInput = $(':input[name="captcha"]');
+                this.cache.$captchaInput = $(':input[name="code"]');
 
                 this.eventHandlers();
                 this.setupValidation();
@@ -40,7 +39,7 @@ define([
                 //generate new captcha
                 WEBAPP.cache.$refreshCaptcha.on('click', function(e)
                 {
-                    WEBAPP.cache.$captchaImg.attr("src","/php/newCaptcha.php?rnd=" + Math.random());
+                    WEBAPP.cache.$captchaImg.attr("src","php/newCaptcha.php?rnd=" + Math.random());
                 });
             },
 
@@ -93,23 +92,31 @@ define([
 
                         var submitRequest = $.ajax({
                              type: "POST",
-                             url: "/php/dummyScript.php",
+                             url: "php/checkCaptcha.php",
+                             // url: "php/dummyScript.php",
                              data: {
                                 "data": WEBAPP.cache.$form.serialize()
                             }
                         });
 
-                        submitRequest.done(function(msg)
+                        submitRequest.done(function(data, textStatus, jqXHR)
                         {
-                            //success
-                            console.log('success');
-                            $('body').html('<h1>captcha correct, submit form success!</h1>');
+                            var response = JSON.parse(data);
+                            if(true == response.success) {
+                                $('#log').css({display: "block"});
+                                $('#log').html('<h1>captcha correct, submit form success!</h1>');
+                                // $('body').html('<h1>captcha correct, submit form success!</h1>');
+                            } else{
+                                // $('body').html('<h1>captcha incorrect, submit form success!</h1>');
+                                $('#log').css({display: "block"});
+                                $('#log').html('<h1>captcha incorrect, submit form success!</h1>');
+                            }
                         });
 
-                        submitRequest.fail(function(jqXHR, textStatus)
+                        submitRequest.fail(function(jqXHR, textStatus, errorThrown)
                         {
                             //fail
-                            console.log( "fail - an error occurred: (" + textStatus + ")." );
+                            // console.log( "fail - an error occurred: (" + textStatus + ")." );
                         });
 
                     }

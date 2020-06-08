@@ -1,12 +1,14 @@
     <?php
     session_start();
-
-    if(isset($_REQUEST['code']))
+    parse_str($_POST['data'], $data);
+    $result = ["success" => false];
+    if(isset($data['code']))
     {
-        echo json_encode(strtolower($_REQUEST['code']) == strtolower($_SESSION['captcha']));
+        $result = ["success" => strtolower($data['code']) == strtolower($_SESSION['captcha'])];
+        echo json_encode($result);
     }
     else
     {
-        echo 0; // no code
+        echo json_encode($result);
     }
     ?>
